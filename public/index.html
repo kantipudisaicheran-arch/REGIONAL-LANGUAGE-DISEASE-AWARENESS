@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Regional Language Disease Awareness</title>
+    <!-- Modern Typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Leaflet Map CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div class="background-effects">
+        <div class="glow glow-1"></div>
+        <div class="glow glow-2"></div>
+    </div>
+
+    <!-- Language Selection Screen -->
+    <div id="languageScreen" class="screen active">
+        <div class="container glass-panel">
+            <header class="header">
+                <div class="logo-area">
+                    <span class="icon">🌍</span>
+                    <h1 class="title" data-lang="main-title">Regional Language Disease Awareness</h1>
+                </div>
+            </header>
+
+            <main class="main-content center-content">
+                <div class="welcome-section">
+                    <h2 class="welcome-title" data-lang="welcome-message">Welcome to Health Awareness Portal</h2>
+                    <p class="welcome-subtitle" data-lang="welcome-subtitle">Your gateway to health information in
+                        regional languages</p>
+                </div>
+
+                <div class="language-selector">
+                    <h3 class="subtitle">Select your language</h3>
+                    <div class="lang-blocks">
+                        <button class="lang-block active" data-lang-code="en"
+                            onclick="changeLanguage('en')">English</button>
+                        <button class="lang-block" data-lang-code="hi" onclick="changeLanguage('hi')">हिंदी</button>
+                        <button class="lang-block" data-lang-code="te" onclick="changeLanguage('te')">తెలుగు</button>
+                        <button class="lang-block" data-lang-code="ta" onclick="changeLanguage('ta')">தமிழ்</button>
+                        <button class="lang-block" data-lang-code="kn" onclick="changeLanguage('kn')">ಕನ್ನಡ</button>
+                        <button class="lang-block" data-lang-code="mr" onclick="changeLanguage('mr')">मराठी</button>
+                        <button class="lang-block" data-lang-code="gu" onclick="changeLanguage('gu')">ગુજરાતી</button>
+                    </div>
+                </div>
+
+                <button class="primary-btn glow-on-hover" onclick="showDiseasesScreen()" data-lang="view-diseases">
+                    Continue <span class="arrow">→</span>
+                </button>
+            </main>
+        </div>
+    </div>
+
+    <!-- Disease Information Screen -->
+    <div id="diseaseScreen" class="screen">
+        <div class="container glass-panel large">
+            <header class="header">
+                <button class="back-btn" onclick="showLanguageScreen()">← <span data-lang="back">Back</span></button>
+                <div class="logo-area">
+                    <h1 class="title" data-lang="disease-info-title">Disease Information</h1>
+                </div>
+                <div class="current-lang-badge" id="currentLangDisplay">EN</div>
+            </header>
+
+            <main class="main-content split-layout">
+                <aside class="sidebar">
+                    <div class="disease-selector">
+                        <h3 data-lang="choose-disease">Choose a Disease</h3>
+                        <div class="disease-buttons" id="diseaseList">
+                            <div class="loader">Loading diseases...</div>
+                            <!-- Buttons injected dynamically -->
+                        </div>
+                    </div>
+
+                    <div class="action-buttons-vertical">
+                        <button class="secondary-btn" onclick="showHospitalsScreen()">
+                            🏥 <span data-lang="find-hospitals">Find Hospitals</span>
+                        </button>
+                        <button class="secondary-btn" onclick="showContactScreen()">
+                            📞 <span data-lang="contact-us">Contact Us</span>
+                        </button>
+                    </div>
+                </aside>
+
+                <section class="disease-content-area" id="diseaseContentArea">
+                    <div class="empty-state" id="diseaseEmptyState">
+                        <span class="icon">🔬</span>
+                        <p data-lang="select-prompt">Please select a disease from the list to view details.</p>
+                    </div>
+
+                    <div class="disease-details hidden" id="diseaseDetails">
+                        <h2 class="disease-name" id="diseaseName">Disease Name</h2>
+
+                        <div class="disease-media">
+                            <div class="disease-image-container">
+                                <img id="diseaseImage" src="" alt="Disease illustration">
+                            </div>
+                            <div class="disease-video-container">
+                                <iframe id="diseaseVideo" width="100%" height="100%" src="" title="YouTube video player"
+                                    frameborder="0" allowfullscreen></iframe>
+                            </div>
+                        </div>
+
+                        <div class="disease-info-grid">
+                            <div class="info-card">
+                                <h4 data-lang="symptoms">Symptoms</h4>
+                                <p id="symptomsText"></p>
+                            </div>
+                            <div class="info-card">
+                                <h4 data-lang="causes">Causes</h4>
+                                <p id="causesText"></p>
+                            </div>
+                            <div class="info-card">
+                                <h4 data-lang="prevention">Prevention</h4>
+                                <p id="preventionText"></p>
+                            </div>
+                            <div class="info-card">
+                                <h4 data-lang="medicine">Prescribed Medicine</h4>
+                                <p id="medicineText"></p>
+                            </div>
+                        </div>
+
+                        <div class="faq-section" id="faqSection">
+                            <h4 data-lang="faq">Frequently Asked Questions</h4>
+                            <div id="faqContainer" class="faq-list"></div>
+                        </div>
+                    </div>
+                </section>
+            </main>
+        </div>
+    </div>
+
+    <!-- Nearby Hospitals Screen -->
+    <div id="hospitalsScreen" class="screen">
+        <div class="container glass-panel">
+            <header class="header">
+                <button class="back-btn" onclick="showDiseasesScreen()">← <span data-lang="back">Back</span></button>
+                <h1 class="title" data-lang="hospitals-title">Find Hospitals Near You</h1>
+            </header>
+
+            <main class="main-content">
+                <div class="map-wrapper">
+                    <div id="map" class="map-container"></div>
+                </div>
+                <div class="hospital-list-section">
+                    <h3 data-lang="nearby-hospitals">Nearby Hospitals</h3>
+                    <div class="hospital-items" id="hospitalItems">
+                        <!-- Mock hospital data injected via JS -->
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Contact Us Screen -->
+    <div id="contactScreen" class="screen">
+        <div class="container glass-panel">
+            <header class="header">
+                <button class="back-btn" onclick="showDiseasesScreen()">← <span data-lang="back">Back</span></button>
+                <h1 class="title" data-lang="contact-title">Have Questions? Contact Us!</h1>
+            </header>
+
+            <main class="main-content contact-layout">
+                <div class="contact-illustration">
+                    <div class="support-icon">🎧</div>
+                    <p data-lang="contact-subtitle">We are here to help you with any queries regarding health and our
+                        platform.</p>
+                </div>
+
+                <form class="contact-form" id="contactForm" onsubmit="submitContactForm(event)">
+                    <div class="form-group">
+                        <label for="userName" data-lang="your-name">Your Name</label>
+                        <input type="text" id="userName" name="userName" required placeholder="John Doe">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="userEmail" data-lang="your-email">Your Email</label>
+                        <input type="email" id="userEmail" name="userEmail" required placeholder="john@example.com">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="userMessage" data-lang="your-message">Your Message</label>
+                        <textarea id="userMessage" name="userMessage" rows="5" required
+                            placeholder="How can we help?"></textarea>
+                    </div>
+
+                    <div class="form-status" id="formStatus"></div>
+
+                    <button type="submit" class="primary-btn submit-btn" data-lang="send-message">
+                        Send Message <span class="loader-spinner" id="submitLoader" style="display:none;"></span>
+                    </button>
+                </form>
+            </main>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="script-api.js"></script>
+
+</body>
+
+</html>
